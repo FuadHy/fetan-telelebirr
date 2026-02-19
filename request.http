@@ -1,0 +1,1 @@
+GET http://localhost:4002/generate-checkout?amount=400&title=February_Contibution

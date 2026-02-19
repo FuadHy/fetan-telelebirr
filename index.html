@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="startPay()">Start Pay</button>
+    <script>
+        function startPay(checkOutUrl) {  // rawRequest get from create order api
+            let anchorEle = document.createElement("a");
+            anchorEle.setAttribute("href", 'https://developerportal.ethiotelebirr.et:38443/payment/web/paygate?appid=1227472229734701&merch_code=621773&nonce_str=OQY0V9TXU7WHMVLMPVJ7RH3RL210AIXO&prepay_id=024379131f1d042a80e59681282ec9d5977008&timestamp=1771423740&sign=sNTysiA8nk8AT3j+xhZnzO3+mtDHqW8u6Q4ezq0iACXsAUbSsqMyw1yLikDCZxlkZVuaQvBGi1lbmW52EJrtBZwFxWCjl8PxGQvgusMaZEk6nKtXwS4/yqhsg/JkW0x1wWSqxHNsvXVdM84qHS2nyP3ooDBYB3TPeR+INA/PN6vaPFrI39kQ2lAKfFoK1WcQ6L1SPSm2Io5WcEIGqDdxXahQyZYudZAyEiZKgNuwItqa5PF4mEpEN5fXtBt47cS+Bo6Fd4vsNj1ByzigJxNOiKBIUMiblsSck+z+hcXyhJmw+LqsILFnUA2D4wMstbl6qCcdXRqWdNROuglKc7tL1Q==&sign_type=SHA256WithRSA&version=1.0&trade_type=Checkout');
+            anchorEle.setAttribute("target", "_blank");
+            anchorEle.setAttribute("rel", "external");
+            anchorEle.style.display = "none";
+            anchorEle.click();
+        }
+    </script>
+</body>
+</html>
