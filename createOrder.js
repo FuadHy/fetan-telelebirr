@@ -81,7 +81,7 @@ function createRequestObject(title, amount, circle_id) {
     payee_identifier: config.merchantCode,
     payee_identifier_type: "04",
     payee_type: "5000",
-    redirect_url: 'http://localhost:8000' + "/api/contribute/activate-circle/new/" + circle_id,
+    redirect_url: 'https://api.fetanequb.com' + "/api/contribute/activate-circle/new/" + circle_id,
     callback_info: "From web",
   };
   
