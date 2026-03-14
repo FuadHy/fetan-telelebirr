@@ -1,21 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Start Payment - Telebirr</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#f4f6f8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    padding:  20px;
+}
+
+.card{
+    background:white;
+    width:90%;
+    max-width:420px;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.logo{
+    width:120px;
+    margin-bottom:20px;
+}
+
+h1{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+p{
+    color:#666;
+    font-size:14px;
+    margin-bottom:25px;
+}
+
+.pay-btn{
+    background:#1aa34a;
+    color:white;
+    border:none;
+    padding:15px;
+    width:100%;
+    font-size:16px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.pay-btn:hover{
+    background:#15873d;
+}
+
+@media (max-width:480px){
+    .card{
+        padding:30px 20px;
+    }
+}
+</style>
 </head>
+
 <body>
-    <button onclick="startPay()">Start Pay</button>
-    <script>
-        function startPay(checkOutUrl) {  // rawRequest get from create order api
-            let anchorEle = document.createElement("a");
-            anchorEle.setAttribute("href", 'https://developerportal.ethiotelebirr.et:38443/payment/web/paygate?appid=1227472229734701&merch_code=621773&nonce_str=OQY0V9TXU7WHMVLMPVJ7RH3RL210AIXO&prepay_id=024379131f1d042a80e59681282ec9d5977008&timestamp=1771423740&sign=sNTysiA8nk8AT3j+xhZnzO3+mtDHqW8u6Q4ezq0iACXsAUbSsqMyw1yLikDCZxlkZVuaQvBGi1lbmW52EJrtBZwFxWCjl8PxGQvgusMaZEk6nKtXwS4/yqhsg/JkW0x1wWSqxHNsvXVdM84qHS2nyP3ooDBYB3TPeR+INA/PN6vaPFrI39kQ2lAKfFoK1WcQ6L1SPSm2Io5WcEIGqDdxXahQyZYudZAyEiZKgNuwItqa5PF4mEpEN5fXtBt47cS+Bo6Fd4vsNj1ByzigJxNOiKBIUMiblsSck+z+hcXyhJmw+LqsILFnUA2D4wMstbl6qCcdXRqWdNROuglKc7tL1Q==&sign_type=SHA256WithRSA&version=1.0&trade_type=Checkout');
-            anchorEle.setAttribute("target", "_blank");
-            anchorEle.setAttribute("rel", "external");
-            anchorEle.style.display = "none";
-            anchorEle.click();
-        }
-    </script>
+
+<div class="card">
+
+<img class="logo" src="https://www.ethiotelecom.et/wp-content/uploads/2025/10/telebirr-logo-01.png">
+
+<h1>Start Payment</h1>
+
+<p>Click the button below to continue your payment using Telebirr.</p>
+
+<button class="pay-btn" onclick="startPay()">Pay with Telebirr</button>
+
+</div>
+
+<script>
+
+function startPay(){
+
+    const checkoutUrl = "{{ payment_url }}";
+
+    window.location.href = checkoutUrl;
+
+}
+
+</script>
+
 </body>
 </html>

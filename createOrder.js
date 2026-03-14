@@ -19,7 +19,8 @@ async function createOrder(amount, title, circle_id) {
   let createOrderResult = await requestCreateOrder(
     fabricToken,
     title,
-    amount
+    amount,
+    circle_id
   );
   console.log('baba***************', createOrderResult);
   let prepayId = createOrderResult.biz_content.prepay_id;
@@ -53,7 +54,7 @@ async function requestCreateOrder(fabricToken, title, amount, circle_id) {
     });
   });
 }
-
+  
 function createRequestObject(title, amount, circle_id) {
   let req = {
     timestamp: tools.createTimeStamp(),
@@ -68,7 +69,7 @@ function createRequestObject(title, amount, circle_id) {
             // )
   
   let biz = {
-    notify_url: 'http://localhost:8000' + "/api/contribute/activate-circle/new/" + circle_id, //When the payment is completed, the payment callback result is sent to this URL.
+    notify_url: 'https://api.fetanequb.com' + "/api/contribute/activate-circle/new/" + circle_id, //When the payment is completed, the payment callback result is sent to this URL.
     appid: config.merchantAppId,
     merch_code: config.merchantCode,
     merch_order_id: createMerchantOrderId(),
