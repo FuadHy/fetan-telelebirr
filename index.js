@@ -9,9 +9,9 @@ const express = require('express')
 const app = express()
 app.use(express.json());
 app.post('/generate-checkout', async (req, res) => {
-    const {amount, title, circle_id} = req.body;
+    const {amount, title, circle_id, tx_ref, type} = req.body;
     console.log(req.body)
-    const prepayId = await createOrder(amount, title, circle_id);
+    const prepayId = await createOrder(amount, title, circle_id, tx_ref, type);
     const checkoutUrl = createCheckoutUrl(prepayId);
     res.json({success: true, checkoutUrl});
 })

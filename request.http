@@ -1,1 +1,10 @@
-GET http://localhost:4002/generate-checkout?amount=400&title=February_Contibution
+POST http://localhost:4002/generate-checkout
+Content-Type: application/json
+
+{
+    "amount": "4000",
+    "title": "April_Contibution",
+    "circle_id": "test-april-for-telebirr",
+    "tx_ref": "12344654849584",
+    "type": "contribute"
+}

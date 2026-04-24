@@ -8,29 +8,30 @@ var request = require("request");
 
 
 // Main function to create an order with manual input
-async function createOrder(amount, title, circle_id) {
+async function createOrder(amount, title, circle_id, tx_ref, type) {
   
-  console.log(`Title: ${title} Amount: ${amount}`);
   
   let applyFabricTokenResult = await applyFabricToken();
   let fabricToken = applyFabricTokenResult.token;
-  console.log("fabricToken =", fabricToken);
+ 
   
   let createOrderResult = await requestCreateOrder(
     fabricToken,
     title,
     amount,
-    circle_id
+    circle_id,
+    tx_ref,
+    type
   );
-  console.log('baba***************', createOrderResult);
+  ;
   let prepayId = createOrderResult.biz_content.prepay_id;
-  console.log("Prepay ID:", prepayId);
+  
   return prepayId;
 }
 
-async function requestCreateOrder(fabricToken, title, amount, circle_id) {
+async function requestCreateOrder(fabricToken, title, amount, circle_id, tx_ref, type) {
   return new Promise((resolve) => {
-    let reqObject = createRequestObject(title, amount, circle_id);
+    let reqObject = createRequestObject(title, amount, circle_id, tx_ref, type);
     console.log('reqObject***************', reqObject);
     var options = {
       method: "POST",
@@ -40,9 +41,9 @@ async function requestCreateOrder(fabricToken, title, amount, circle_id) {
         "X-APP-Key": config.fabricAppId,
         Authorization: fabricToken,
       },
-      rejectUnauthorized: false, //add when working with https sites
-      requestCert: false, //add when working with https sites
-      agent: false, //add when working with https sites
+      rejectUnauthorized: false,
+      requestCert: false,
+      agent: false,
       body: JSON.stringify(reqObject),
     };
 
@@ -55,7 +56,7 @@ async function requestCreateOrder(fabricToken, title, amount, circle_id) {
   });
 }
   
-function createRequestObject(title, amount, circle_id) {
+function createRequestObject(title, amount, circle_id, tx_ref, type) {
   let req = {
     timestamp: tools.createTimeStamp(),
     nonce_str: tools.createNonceStr(),
@@ -63,13 +64,24 @@ function createRequestObject(title, amount, circle_id) {
     version: "1.0",
   };
 
+  let path = ''
+  if(type == 'new' || type == 'join'){
+    path = "/api/contribute/activate-circle/" + type + '/' + circle_id + '/' + tx_ref
+  }
+
+  if(type == 'contribute'){
+    path = "/api/contribute/complete-contribution/" + circle_id + '/' + tx_ref
+  }
+
+  console.log(path)
+
   // callback_url=SERVER_URL + "/api/contribute/activate-circle/new/" + str(circle_id),
   //               tx_ref="",
   //               return_url=SERVER_URL + "/api/contribute/activate-circle/new/" + str(circle_id)
             // )
   
   let biz = {
-    notify_url: 'https://api.fetanequb.com' + "/api/contribute/activate-circle/new/" + circle_id, //When the payment is completed, the payment callback result is sent to this URL.
+    notify_url: 'https://api.fetanequb.com' + path, //When the payment is completed, the payment callback result is sent to this URL.
     appid: config.merchantAppId,
     merch_code: config.merchantCode,
     merch_order_id: createMerchantOrderId(),
@@ -82,15 +94,14 @@ function createRequestObject(title, amount, circle_id) {
     payee_identifier: config.merchantCode,
     payee_identifier_type: "04",
     payee_type: "5000",
-    redirect_url: 'https://api.fetanequb.com' + "/api/contribute/activate-circle/new/" + circle_id,
+    redirect_url: 'https://api.fetanequb.com' + path,
     callback_info: "From web",
   };
   
   req.biz_content = biz;
   req.sign = tools.signRequestObject(req); // tools code you can download form demo
-  console.log('req***************', req, biz);
+  
   req.sign_type = "SHA256WithRSA";
-  console.log('req***************', req);
   return req;
 }
 
@@ -102,7 +113,7 @@ function createMerchantOrderId() {
 if (require.main === module) {
   createOrder()
     .then((prepayId) => {
-      console.log("Order created successfully. Prepay ID:", prepayId);
+      
       process.exit(0);
     })
     .catch((error) => {
