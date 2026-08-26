@@ -81,7 +81,7 @@ function createRequestObject(title, amount, circle_id, tx_ref, type) {
             // )
   
   let biz = {
-    notify_url: 'https://api.fetanequb.com' + path, //When the payment is completed, the payment callback result is sent to this URL.
+    notify_url: 'https://test-api.fetanequb.com' + path, //When the payment is completed, the payment callback result is sent to this URL.
     appid: config.merchantAppId,
     merch_code: config.merchantCode,
     merch_order_id: createMerchantOrderId(),
