@@ -94,7 +94,7 @@ function createRequestObject(title, amount, circle_id, tx_ref, type) {
     payee_identifier: config.merchantCode,
     payee_identifier_type: "04",
     payee_type: "5000",
-    redirect_url: 'https://api.fetanequb.com' + path,
+    redirect_url: 'https://test-api.fetanequb.com' + path,
     callback_info: "From web",
   };
   
