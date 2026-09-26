@@ -1,7 +1,6 @@
 const applyFabricToken = require("./fabric");
 const tools = require("./tools"); // Import the tools module
 const config = require("./config");
-const https = require("http");
 var request = require("request");
 
 // Manual input - edit these values directly in the code
@@ -9,6 +8,9 @@ var request = require("request");
 
 // Main function to create an order with manual input
 async function createOrder(amount, title, circle_id, tx_ref, type) {
+  if (!/^CONTRIB[0-9a-f]{32}$/.test(tx_ref)) {
+    throw new Error('Invalid payment reference');
+  }
   
   
   let applyFabricTokenResult = await applyFabricToken();
@@ -30,9 +32,8 @@ async function createOrder(amount, title, circle_id, tx_ref, type) {
 }
 
 async function requestCreateOrder(fabricToken, title, amount, circle_id, tx_ref, type) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let reqObject = createRequestObject(title, amount, circle_id, tx_ref, type);
-    console.log('reqObject***************', reqObject);
     var options = {
       method: "POST",
       url: config.baseUrl + "/payment/v1/merchant/preOrder",
@@ -41,17 +42,24 @@ async function requestCreateOrder(fabricToken, title, amount, circle_id, tx_ref,
         "X-APP-Key": config.fabricAppId,
         Authorization: fabricToken,
       },
-      rejectUnauthorized: false,
-      requestCert: false,
-      agent: false,
       body: JSON.stringify(reqObject),
+      timeout: 15000,
     };
 
     request(options, function (error, response) {
-      console.log("Error:", error);
-      if (error) throw new Error(error);
-      let result = JSON.parse(response.body);
-      resolve(result);
+      if (error) return reject(error);
+      if (!response || response.statusCode !== 200) {
+        return reject(new Error('Telebirr preOrder HTTP error'));
+      }
+      try {
+        const result = JSON.parse(response.body);
+        if (!result.biz_content || !result.biz_content.prepay_id) {
+          return reject(new Error('Telebirr preOrder returned no prepay ID'));
+        }
+        resolve(result);
+      } catch (parseError) {
+        reject(new Error('Telebirr preOrder returned invalid JSON'));
+      }
     });
   });
 }
@@ -73,18 +81,12 @@ function createRequestObject(title, amount, circle_id, tx_ref, type) {
     path = "/api/contribute/complete-contribution/" + circle_id + '/' + tx_ref
   }
 
-  console.log(path)
-
-  // callback_url=SERVER_URL + "/api/contribute/activate-circle/new/" + str(circle_id),
-  //               tx_ref="",
-  //               return_url=SERVER_URL + "/api/contribute/activate-circle/new/" + str(circle_id)
-            // )
-  
   let biz = {
     notify_url: 'https://test-api.fetanequb.com' + path, //When the payment is completed, the payment callback result is sent to this URL.
     appid: config.merchantAppId,
     merch_code: config.merchantCode,
-    merch_order_id: createMerchantOrderId(),
+    // Bind Telebirr's signed order ID to the Django payment attempt.
+    merch_order_id: tx_ref,
     trade_type: "Checkout",
     title: title,
     total_amount: amount,
@@ -95,7 +97,7 @@ function createRequestObject(title, amount, circle_id, tx_ref, type) {
     payee_identifier_type: "04",
     payee_type: "5000",
     redirect_url: 'https://test-api.fetanequb.com' + path,
-    callback_info: "From web",
+    callback_info: tx_ref,
   };
   
   req.biz_content = biz;
@@ -103,10 +105,6 @@ function createRequestObject(title, amount, circle_id, tx_ref, type) {
   
   req.sign_type = "SHA256WithRSA";
   return req;
-}
-
-function createMerchantOrderId() {
-  return new Date().getTime() + "";
 }
 
 // Run the script if called directly

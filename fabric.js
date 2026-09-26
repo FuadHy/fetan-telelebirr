@@ -11,17 +11,21 @@ function applyFabricToken() {
         "Content-Type": "application/json",
         "X-APP-Key": config.fabricAppId,
       },
-      rejectUnauthorized: false, //add when working with https sites
-      requestCert: false, //add when working with https sites
-      agent: false, //add when working with https sites
       body: JSON.stringify({
         appSecret: config.appSecret,
       }),
+      timeout: 15000,
     };
-    console.log(options);
     request(options, function (error, response) {
-      let result = JSON.parse(response.body);
-      resolve(result);
+      if (error) return reject(error);
+      if (!response || response.statusCode !== 200) {
+        return reject(new Error('Could not obtain Telebirr fabric token'));
+      }
+      try {
+        resolve(JSON.parse(response.body));
+      } catch (parseError) {
+        reject(new Error('Invalid Telebirr token response'));
+      }
     });
   });
 }

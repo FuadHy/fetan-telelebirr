@@ -42,7 +42,6 @@ function signRequestObject(requestObject) {
         signStrList.push(key + "=" + fieldMap[key]);
     }
     let signOriginStr = signStrList.join("&");
-    console.log("signOriginStr", signOriginStr);
     return signString(signOriginStr, config.privateKey);
 }
 
@@ -66,7 +65,6 @@ let signString = (text, privateKey) => {
     const sha256withrsa = new pmlib.rs.KJUR.crypto.Signature({
         alg: "SHA256withRSAandMGF1",
     });
-    console.log('privateKey***************');
     sha256withrsa.init(rsaKey);
     sha256withrsa.updateString(text);
     const sign = pmlib.rs.hextob64(sha256withrsa.sign());
@@ -78,50 +76,7 @@ function createTimeStamp() {
 }
 
 function createNonceStr() {
-    let chars = [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-    ];
-    let str = "";
-    for (let i = 0; i < 32; i++) {
-        let index = parseInt(Math.random() * 35);
-        str += chars[index];
-    }
-    return str;
+    return crypto.randomBytes(16).toString('hex').toUpperCase();
 }
 
 module.exports = {
