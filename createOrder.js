@@ -8,7 +8,10 @@ var request = require("request");
 
 // Main function to create an order with manual input
 async function createOrder(amount, title, circle_id, tx_ref, type) {
-  if (!/^CONTRIB[0-9a-f]{32}$/.test(tx_ref)) {
+  // Current Django checkouts use a six-character uppercase reference. Keep
+  // accepting the previous UUID-based format so already-issued payments can
+  // still be retried or reconciled.
+  if (!/^(?:[A-Z0-9]{6}|CONTRIB[0-9a-f]{32})$/.test(tx_ref)) {
     throw new Error('Invalid payment reference');
   }
   

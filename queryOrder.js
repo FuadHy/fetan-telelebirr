@@ -21,7 +21,9 @@ function createQueryRequest(merchantOrderId) {
 }
 
 async function queryOrder(merchantOrderId) {
-  if (!/^(?:CONTRIB[0-9a-f]{32}|[0-9]{10,20})$/.test(merchantOrderId)) {
+  // Accept current six-character Django references, plus the legacy UUID and
+  // numeric reference formats for payments that were already issued.
+  if (!/^(?:[A-Z0-9]{6}|CONTRIB[0-9a-f]{32}|[0-9]{10,20})$/.test(merchantOrderId)) {
     throw new Error('Invalid merchant order ID');
   }
   const tokenResult = await applyFabricToken();
